@@ -1,26 +1,139 @@
-/* style.css */
-body {
-  font-family: sans-serif;
-  background-color: #f5f5f5;
-  text-align: center;
-  padding: 2em;
+/* Ensure the slider fills the bar completely, thumb touches edges */
+input[type="range"].volume-slider {
+  width: 200px;         /* adjust as needed, or use 100% */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background: transparent;
 }
 
-input {
-  padding: 0.5em;
-  font-size: 1em;
-  margin-top: 1em;
-  width: 200px;
+/* Chrome, Safari, Edge */
+input[type="range"].volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #ccc;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -5px;  /* Center thumb on track */
+  box-shadow: 0 0 2px #00000055;
+}
+input[type="range"].volume-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  background: #444;
+  border-radius: 2px;
 }
 
-button {
-  padding: 0.5em 1em;
-  font-size: 1em;
-  margin: 0.5em;
+/* Firefox */
+input[type="range"].volume-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: #ccc;
+  border: none;
+  border-radius: 50%;
   cursor: pointer;
 }
+input[type="range"].volume-slider::-moz-range-track {
+  height: 4px;
+  background: #444;
+  border-radius: 2px;
+}
+input[type="range"].volume-slider {
+  border: none;
+  background: transparent;
+}
 
-#feedback {
-  margin-top: 1em;
-  font-weight: bold;
+/* IE */
+input[type="range"].volume-slider::-ms-fill-lower,
+input[type="range"].volume-slider::-ms-fill-upper {
+  background: #444;
+  border-radius: 2px;
+}
+input[type="range"].volume-slider::-ms-thumb {
+  width: 14px;
+  height: 14px;
+  background: #ccc;
+  border-radius: 50%;
+  cursor: pointer;
+}
+input[type="range"].volume-slider {
+  width: 200px;
+  background: transparent;
+  border: none;
+}
+
+input[type="range"].volume-slider {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+input[type="range"].volume-slider {
+  width: 150px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background: transparent;
+}
+
+/* Remove thumb padding at ends in Chrome/Safari/Edge */
+input[type="range"].volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 2px #00000044;
+  margin-top: -7px;
+  cursor: pointer;
+  border: 2px solid #bae1ff;
+}
+input[type="range"].volume-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  background: #bae1ff;
+  border-radius: 2px;
+  margin: 0;
+}
+/* Remove thumb padding in Firefox */
+input[type="range"].volume-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border: 2px solid #bae1ff;
+  border-radius: 50%;
+  cursor: pointer;
+}
+input[type="range"].volume-slider::-moz-range-track {
+  height: 4px;
+  background: #bae1ff;
+  border-radius: 2px;
+}
+/* IE/Edge fixes */
+input[type="range"].volume-slider::-ms-fill-lower,
+input[type="range"].volume-slider::-ms-fill-upper {
+  background: #bae1ff;
+  border-radius: 2px;
+}
+input[type="range"].volume-slider::-ms-thumb {
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #bae1ff;
+}
+input[type="range"].volume-slider {
+  border: none;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Remove default focus outline */
+input[type="range"].volume-slider:focus {
+  outline: none;
 }
