@@ -369,7 +369,7 @@
   },
   {
     file: "Doublë.mp3",
-	title: "Doublë",
+	title: "Double",
 	artist:"Yeat",
     answers: ["double"]
   },
@@ -435,7 +435,7 @@
   },
   {
     file: "Gët Busy [Official Music Video].mp3",
-	title: "Gët Busy",
+	title: "Get Busy",
 	artist:"Yeat",
     answers: ["get busy"]
   },
@@ -500,7 +500,7 @@
     answers: ["loveable"]
   },
   {
-    file: "LE SSERAFIM (르세라핌) ‘ANTIFRAGILE’ Special Performance Video.mp3",
+    file: "LE SSERAFIM 'ANTIFRAGILE' Lyrics (레세라핌 ANTIFRAGILE 가사) (Color Coded Lyrics).mp3",
     title: "ANTIFRAGILE",
     artist: "LE SSERAFIM",
     answers: ["antifragile", "anti fragile"]
@@ -615,13 +615,13 @@
   },
   {
     file: "On tha linë.mp3",
-    title: "On tha linë",
+    title: "On tha line",
     artist: "Yeat",
     answers: ["on tha line"]
   },
   {
     file: "Out thë way [Official Audio].mp3",
-    title: "Out thë way",
+    title: "Out the way",
     artist: "Yeat",
     answers: ["out the way"]
   },
@@ -705,7 +705,7 @@
   },
   {
     file: "Systëm [Official Audio].mp3",
-    title: "Systëm",
+    title: "System",
     artist: "Yeat",
     answers: ["system"]
   },
@@ -1077,13 +1077,13 @@
   },
   {
     file: "NewJeans 'New Jeans (ft. The Powerpuff Girls)' Lyrics (뉴진스 New Jeans 가사) (Color Coded Lyrics).mp3",
-    title: "",
+    title: "New Jeans",
     artist: "NewJeans",
     answers: ["new jeans", "newjeans"]
   },
   {
     file: "NewJeans (뉴진스) 'ASAP' Official MV.mp3",
-    title: "",
+    title: "ASAP",
     artist: "NewJeans",
     answers: ["asap"]
   },
@@ -1239,7 +1239,7 @@
   },
   {
     file: "Tame Impala - New Person, Same Old Mistakes (Audio).mp3",
-	title: "New Person, Same Old Mistakes",
+	title: "New Person Same Old Mistakes",
 	artist: "Tame Impala",
     answers: ["new person same old mistakes"]
   },
@@ -1275,7 +1275,7 @@
   },
   {
     file: "tripleS(트리플에스) LOVElution ‘Girls' Capitalism’ Official Dance Ver..mp3",
-	title: "Girls' Capitalism",
+	title: "Girls Capitalism",
 	artist: "tripleS",
     answers: ["girls capitalism"]
   },
@@ -1317,7 +1317,7 @@
   },
   {
     file: "bigger thën everything [Official Audio].mp3",
-	title: "bigger thën everything",
+	title: "bigger then everything",
 	artist: "Yeat",
     answers: ["bigger then everything"]
   },
@@ -1354,7 +1354,7 @@
     let currentIndex = 0;
     let currentSong = songs[currentIndex];
     let audio = new Audio(currentSong.file);
-    let clipDurations = [1, 2, 4, 7];
+    let clipDurations = [1, 2, 4, 6, 8, 10, 15];
     let currentClip = 0;
     let isPlaying = false;
     let isFirstLoad = true;
