@@ -1,16 +1,29 @@
+  console.log("Game script loaded");
+
   document.addEventListener("DOMContentLoaded", () => {
+    // Remove punctuation, symbols, and diacritics; lowercase for comparison
+function normalize(str) {
+  return str
+    .toLowerCase()
+    // Decompose accented letters (é → e + ́) and strip diacritics
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    // Remove anything that isn't a letter, number, or space
+    .replace(/[^a-z0-9 ]/g, "")
+    .trim();
+}
+
     let songs = [
  
   {
     file: "Camila Cabello - HE KNOWS (ft. Lil Nas X)(Official Music Video).mp3",
 	title: "HE KNOWS",
-	artist: "Camila Cabello (ft. Lil Nas X)",
+	artist: "Lil Nas X",
     answers: ["he knows"]
   },
   {
     file: "DESTIN CONRAD, Lil Nas X - P.B.S. (Official Visualizer).mp3",
 	title: "P.B.S.",
-	artist: "DESTIN CONRAD, Lil Nas X",
+	artist: "Lil Nas X",
     answers: ["pbs"]
   },
   {
@@ -22,19 +35,19 @@
   {
     file: "Kevin Abstract - Tennessee ft. Lil Nas X (Official Audio).mp3",
 	title: "Tennessee",
-	artist: "Kevin Abstract, Lil Nas X",
+	artist: "Lil Nas X",
     answers: ["tennessee"]
   },
   {
     file: "light!.mp3",
-	title: "light!",
-	artist: "Lil Nas X, 9lives",
+	title: "light! skaiwater & 9lives",
+	artist: "Lil Nas X",
     answers: ["light"]
   },
   {
     file: "Lil Nas X - AM I DREAMING ft. Miley Cyrus.mp3",
 	title: "AM I DREAMING",
-	artist: "Lil Nas X ft. Miley Cyrus",
+	artist: "Lil Nas X",
     answers: ["am i dreaming"]
   },
   {
@@ -64,7 +77,7 @@
   {
     file: "Lil Nas X - DOLLA SIGN SLIME ft. Megan Thee Stallion.mp3",
 	title: "DOLLA SIGN SLIME",
-	artist: "Lil Nas X ft. Megan Thee Stallion",
+	artist: "Lil Nas X",
     answers: ["dolla sign slime"]
   },
   {
@@ -142,13 +155,13 @@
   {
     file: "Lil Nas X - Old Town Road (Official Video) ft. Billy Ray Cyrus.mp3",
 	title: "Old Town Road",
-	artist: "Lil Nas X ft. Billy Ray Cyrus",
+	artist: "Lil Nas X",
     answers: ["old town road"]
   },
   {
     file: "Lil Nas X - ONE OF ME ft. Elton John.mp3",
 	title: "ONE OF ME",
-	artist: "Lil Nas X ft. Elton John",
+	artist: "Lil Nas X",
     answers: ["one of me"]
   },
   {
@@ -166,7 +179,7 @@
   {
     file: "Lil Nas X - SCOOP ft. Doja Cat.mp3",
 	title: "SCOOP",
-	artist: "Lil Nas X ft. Doja Cat",
+	artist: "Lil Nas X",
     answers: ["lil nas x   scoop ft. doja cat"]
   },
   {
@@ -220,25 +233,25 @@
   {
     file: "Lil Nas X, Cardi B - Rodeo (Official Audio).mp3",
 	title: "Rodeo",
-	artist: "Lil Nas X, Cardi B",
+	artist: "Lil Nas X",
     answers: ["Rodeo"]
   },
   {
     file: "Lil Nas X, Jack Harlow - INDUSTRY BABY (EXTENDED).mp3",
 	title: "INDUSTRY BABY",
-	artist: "Lil Nas X, Jack Harlow",
+	artist: "Lil Nas X",
     answers: ["INDUSTRY BABY"]
   },
   {
     file: "Lil Nas X, Travis Barker - F9mily (You & Me) (Official Audio).mp3",
 	title: "F9mily (You & Me)",
-	artist: "Lil Nas X, Travis Barker",
+	artist: "Lil Nas X",
     answers: ["F9mily", "family"]
   },
   {
     file: "Lil Nas X, Youngboy Never Broke Again - Late To Da Party (FCK BET) (Official Video).mp3",
 	title: "Late To Da Party (FCK BET)",
-	artist: "Lil Nas X, Youngboy Never Broke Again",
+	artist: "Lil Nas X",
     answers: ["late to da party"]
   },
   {
@@ -777,8 +790,8 @@
   },
   {
     file: "dopamine.mp3",
-    title: "Dopamine",
-    artist: "AESPA (GISELLE)",
+    title: "Dopamine (GISELLE SOLO)",
+    artist: "AESPA",
     answers: ["dopamine"]
   },
     {
@@ -946,7 +959,7 @@
   {
     file: "GroovyRoom - Yes or No (Feat. 허윤진 of LE SSERAFIM, Crush) (Official Lyric Video).mp3",
     title: "Yes or No",
-    artist: "GroovyRoom (Feat. 허윤진 of LE SSERAFIM, Crush)",
+    artist: "LE SSERAFIM",
     answers: ["yes or no"]
   },
   {
@@ -1162,7 +1175,7 @@
   {
     file: "ODD EYE CIRCLE Air Force One Lyrics (Color Coded Lyrics).mp3",
     title: "Air Force One",
-    artist: "(ARTMS) ODD EYE CIRCLE",
+    artist: "ARTMS",
     answers: ["air force one"]
   },
   {
@@ -1192,7 +1205,7 @@
   {
     file: "Roses (ISA) (Roses (ISA)).mp3",
     title: "Roses",
-    artist: "STAYC (ISA)",
+    artist: "STAYC",
     answers: ["roses"]
   },
   {
@@ -1342,270 +1355,451 @@
   
     ];
 
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
+ // ───────────── FILTER SETUP ─────────────
+  const uniqueArtists = [...new Set(songs.map(s => s.artist))];
+  let activeArtists = new Set(uniqueArtists);
+
+  // Shuffle helper
+  function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
     }
+  }
 
-    shuffleArray(songs);
+  let filteredSongs = songs.filter(s => activeArtists.has(s.artist));
+  shuffleArray(filteredSongs);
 
-    let currentIndex = 0;
-    let currentSong = songs[currentIndex];
-    let audio = new Audio(currentSong.file);
-    let clipDurations = [1, 2, 4, 6, 8, 10, 15];
-    let currentClip = 0;
-    let isPlaying = false;
-    let isFirstLoad = true;
+  // DOM references
+  const mainContent = document.getElementById("main-content");
+  const playBtn = document.getElementById("play-btn");
+  const submitBtn = document.getElementById("submit-btn");
+  const feedback = document.getElementById("feedback");
+  const guessInput = document.getElementById("guess");
+  const progress = document.getElementById("progress");
 
-    const playBtn = document.getElementById("play-btn");
-    const submitBtn = document.getElementById("submit-btn");
-    const feedback = document.getElementById("feedback");
-    const guessInput = document.getElementById("guess");
+  
 
-    const skipBtn = document.createElement("button");
-    skipBtn.id = "skip-btn";
-    skipBtn.textContent = "⏭️ Skip (Reveal More)";
-    skipBtn.style.marginLeft = "10px";
-    submitBtn.parentNode.insertBefore(skipBtn, feedback);
+ // Artist filter UI container
+// Artist filter UI container
+const artistFilterContainer = document.getElementById("artist-filter") || document.createElement("div");
+artistFilterContainer.id = "artist-filter";
+artistFilterContainer.innerHTML = "<h2>🎤 Filter Artists</h2>";
+Object.assign(artistFilterContainer.style, {
+  position: "fixed",
+  left: "0px",
+  top: "0px",
+  background: "#2c2c4a",
+  padding: "10px",
+  borderRadius: "10px",
+  maxHeight: "80vh",
+  overflowY: "auto",
+  zIndex: "1000",
+  width: "280px",
+  color: "#fff"
+});
 
-    // Volume container with single slider controlling both preview and full player
-    const volumeContainer = document.createElement("div");
-    volumeContainer.style.marginTop = "20px";
-    volumeContainer.style.display = "flex";
-    volumeContainer.style.flexDirection = "column";
-    volumeContainer.style.alignItems = "center";
+// Add Select All / Deselect All button at the top of artist filter
+const toggleAllBtn = document.createElement("button");
+toggleAllBtn.textContent = "Select/Deselect All";
+toggleAllBtn.style.marginBottom = "10px";
+toggleAllBtn.style.width = "100%";
+toggleAllBtn.style.cursor = "pointer";
+toggleAllBtn.style.marginLeft = "-0px";      // move button 10px from left side of container
 
-    const volumeLabel = document.createElement("label");
-    volumeLabel.textContent = "🔉 Volume";
-    volumeLabel.style.color = "#bae1ff";
-    volumeLabel.style.marginBottom = "5px";
+toggleAllBtn.addEventListener("click", () => {
+  const allSelected = uniqueArtists.every(artist => activeArtists.has(artist));
+  if (allSelected) {
+    activeArtists.clear();
+  } else {
+    uniqueArtists.forEach(artist => activeArtists.add(artist));
+  }
+  artistFilterContainer.querySelectorAll("label").forEach(label => {
+    const cb = label.querySelector("input[type=checkbox]");
+    const artistName = label.textContent.trim();
+    cb.checked = activeArtists.has(artistName);
+  });
+  filterSongs();
+});
 
-    const volumeSlider = document.createElement("input");
-    volumeSlider.className = "volume-slider";
-    volumeSlider.type = "range";
-    volumeSlider.min = 0;
-    volumeSlider.max = 1;
-    volumeSlider.step = 0.01;
-    volumeSlider.value = 1;
+artistFilterContainer.appendChild(toggleAllBtn);
 
-    volumeContainer.appendChild(volumeLabel);
-    volumeContainer.appendChild(volumeSlider);
-    document.body.insertBefore(volumeContainer, feedback);
+// --- New: Artist Search Input ---
+const artistSearchInput = document.createElement("input");
+artistSearchInput.type = "search";
+artistSearchInput.placeholder = "Search artists...";
+artistSearchInput.style.cssText = `
+  width: 100%;
+  padding: 5px 8px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  box-sizing: border-box;
+`;
+artistFilterContainer.appendChild(artistSearchInput);
 
-    const progressMeter = document.createElement("progress");
-    progressMeter.id = "preview-meter";
-    progressMeter.max = 1;
-    progressMeter.value = 0;
-    progressMeter.style.width = "150px";
-    progressMeter.style.marginTop = "10px";
-    volumeContainer.appendChild(progressMeter);
+// Container for artist checkboxes so we can filter them easily
+const artistListContainer = document.createElement("div");
+artistFilterContainer.appendChild(artistListContainer);
 
-    const historyLog = document.createElement("div");
-    historyLog.id = "history-log";
-    historyLog.innerHTML = "<h2>🎶 Guessed Songs</h2><ul id='history-list'></ul>";
-    document.body.appendChild(historyLog);
+uniqueArtists.forEach(artist => {
+  const label = document.createElement("label");
+  Object.assign(label.style, { display: "block", margin: "4px 0", cursor: "pointer" });
 
-    const progress = document.createElement("div");
-    progress.id = "progress";
-    progress.style.marginTop = "20px";
-    progress.style.fontSize = "1rem";
-    document.body.insertBefore(progress, historyLog);
+  const cb = document.createElement("input");
+  cb.type = "checkbox";
+  cb.checked = true;
+  cb.style.marginRight = "6px";
 
-    const chime = new Audio("chime.mp3");
+  cb.addEventListener("change", () => {
+    if (cb.checked) activeArtists.add(artist);
+    else activeArtists.delete(artist);
+    filterSongs();
+  });
 
-    // Set volume for both preview audio and full player
-    function setVolume(vol) {
-      audio.volume = vol;
-      chime.volume = vol;
-      fullPlayer.volume = vol;
+  label.appendChild(cb);
+  label.appendChild(document.createTextNode(artist));
+  artistListContainer.appendChild(label);
+});
+
+// Filter artist list on search input
+artistSearchInput.addEventListener("input", () => {
+  const search = artistSearchInput.value.toLowerCase().trim();
+  artistListContainer.querySelectorAll("label").forEach(label => {
+    const text = label.textContent.toLowerCase();
+    label.style.display = text.includes(search) ? "block" : "none";
+  });
+});
+
+
+
+  mainContent.appendChild(artistFilterContainer);
+
+  // Game state variables
+  let currentIndex = 0;
+  let currentSong = filteredSongs[currentIndex];
+  let audio = new Audio(currentSong.file);
+  const clipDurations = [1, 2, 4, 6, 8, 10, 15]; // seconds
+  let currentClip = 0;
+  let isPlaying = false;
+  let isFirstLoad = true;
+  const chime = new Audio("chime.mp3");
+
+  // Volume control UI
+  const volumeContainer = document.createElement("div");
+  volumeContainer.style.cssText = "margin-top:20px; display:flex; flex-direction:column; align-items:center;";
+
+  const volumeLabel = document.createElement("label");
+  volumeLabel.textContent = "🔉 Volume";
+  volumeLabel.style.color = "#bae1ff";
+  volumeLabel.style.marginBottom = "5px";
+
+  const volumeSlider = document.createElement("input");
+  volumeSlider.type = "range";
+  volumeSlider.min = "0";
+  volumeSlider.max = "1";
+  volumeSlider.step = "0.01";
+  volumeSlider.value = "1";
+
+  volumeContainer.appendChild(volumeLabel);
+  volumeContainer.appendChild(volumeSlider);
+  mainContent.insertBefore(volumeContainer, feedback);
+
+  // Set volumes on all audio elements
+  function setVolume(v) {
+    audio.volume = v;
+    chime.volume = v;
+    fullAudio.volume = v;
+  }
+  volumeSlider.addEventListener("input", () => setVolume(+volumeSlider.value));
+
+  // Skip button setup
+  const skipBtn = document.createElement("button");
+  skipBtn.textContent = "⏭️ Skip (Reveal More)";
+  skipBtn.id = "skip-btn";
+  skipBtn.style.height = "40px";
+
+  const controls = document.querySelector(".controls");
+  controls.appendChild(skipBtn);
+
+  // Preview progress meter
+  const progressMeter = document.createElement("progress");
+  progressMeter.id = "preview-meter";
+  progressMeter.max = 1;
+  progressMeter.value = 0;
+  progressMeter.style.cssText = "width:150px; margin-top:10px;";
+  volumeContainer.appendChild(progressMeter);
+
+  // History container
+  const history = document.createElement("div");
+  history.id = "history";
+  history.innerHTML = "<h2>🎶 Guessed Songs</h2><div id='history-list'></div>";
+  mainContent.appendChild(history);
+
+  function addToHistory(name, result = "") {
+    const historyList = document.getElementById("history-list");
+    const guessItem = document.createElement("div");
+    guessItem.className = "guess-item";
+
+    const guessText = document.createElement("span");
+    guessText.className = "guess-text";
+    guessText.textContent = name;
+    guessItem.appendChild(guessText);
+
+    if (result) {
+      const guessResult = document.createElement("span");
+      guessResult.className = "guess-result";
+      guessResult.textContent = result;
+      guessItem.appendChild(guessResult);
     }
+    historyList.insertBefore(guessItem, historyList.firstChild);
+  }
 
-    volumeSlider.addEventListener("input", () => {
-      setVolume(parseFloat(volumeSlider.value));
-    });
+  // Suggestions box for guess input
+  const suggestionsBox = document.createElement("div");
+  suggestionsBox.id = "suggestions";
+  Object.assign(suggestionsBox.style, {
+    position: "absolute",
+    background: "#2c2c4a",
+    color: "#fff",
+    border: "1px solid #555",
+    borderRadius: "10px",
+    padding: "5px",
+    marginTop: "5px",
+    zIndex: "999",
+    display: "none",
+    maxHeight: "500px",
+    overflowY: "auto"
+  });
+  document.body.appendChild(suggestionsBox);
 
-    const style = document.createElement("style");
-    style.innerHTML = `
-      body {
-        background-color: #1a1a2e;
-        color: #fceaff;
-        font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
-        text-align: center;
-        padding: 40px;
-      }
-      h1 {
-        color: #ffb6f9;
-        font-size: 2.5rem;
-        margin-bottom: 20px;
-      }
-      h2 {
-        color: #bae1ff;
-        font-size: 1.5rem;
-        margin-top: 40px;
-      }
-      input, button {
-        padding: 10px 20px;
-        font-size: 1rem;
-        border-radius: 10px;
-        border: none;
-        margin: 10px;
-      }
-      button {
-        background: linear-gradient(145deg, #ffb6f9, #baffc9, #bae1ff);
-        color: #222;
-        cursor: pointer;
-        transition: transform 0.2s;
-      }
-      button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 0 10px #fff3;
-      }
-      #feedback {
-        font-size: 1.2rem;
-        margin-top: 20px;
-        min-height: 2em;
-      }
-      #history-log {
-        margin-top: 50px;
-        text-align: left;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 10px;
-        padding: 20px;
-      }
-      #history-list {
-        list-style: none;
-        padding: 0;
-      }
-      #history-list li {
-        padding: 5px 0;
-        color: #baffc9;
-        font-size: 1rem;
-        border-bottom: 1px solid #444;
-      }
-      body::after {
-        content: "✨💖✨";
-        font-size: 3rem;
-        position: fixed;
-        bottom: 10px;
-        right: 20px;
-        animation: sparkle 1.5s infinite alternate;
-      }
-      @keyframes sparkle {
-        0% { opacity: 0.5; transform: rotate(0deg); }
-        100% { opacity: 1; transform: rotate(10deg); }
-      }
-      #suggestions {
-        max-height: 500px;
-        overflow-y: auto;
-      }
-      #full-player {
-        margin-top: 20px;
-        width: 100%;
-        max-width: 600px;
-        outline: none;
-        border-radius: 10px;
-        background: #2c2c4a;
-        box-shadow: 0 0 10px #bae1ffaa;
-      }
-    `;
-    document.head.appendChild(style);
+  function positionSuggestionsBox() {
+    const rect = guessInput.getBoundingClientRect();
+    suggestionsBox.style.left = rect.left + "px";
+    suggestionsBox.style.top = rect.bottom + window.scrollY + "px";
+    suggestionsBox.style.width = rect.width + "px";
+  }
 
-    // Full player element (hidden initially)
-    const fullPlayer = document.createElement("audio");
-    fullPlayer.id = "full-player";
-    fullPlayer.controls = true;
-    fullPlayer.style.display = "none";
-    document.body.appendChild(fullPlayer);
+  window.addEventListener("resize", positionSuggestionsBox);
+  window.addEventListener("scroll", positionSuggestionsBox);
 
- function showFullPlayer() {
-  fullPlayer.src = currentSong.file;
-  fullPlayer.currentTime = 0;
-  fullPlayerContainer.style.display = "flex";
-  fullPlayer.style.display = "none"; // Hide native controls
-  fullPlayer.load();
-  fullPlayer.play();
-  fullPlayPauseBtn.textContent = "⏸️"; // Show pause icon initially
-}
-
-
-    function updateProgress() {
-      progress.textContent = `Progress: ${currentIndex + 1} / ${songs.length}`;
-    }
-
-    function showTransitionMessage() {
-      const transitionMsg = document.createElement("div");
-      transitionMsg.textContent = "🎵 New Song!";
-      transitionMsg.style.position = "fixed";
-      transitionMsg.style.top = "50%";
-      transitionMsg.style.left = "50%";
-      transitionMsg.style.transform = "translate(-50%, -50%)";
-      transitionMsg.style.fontSize = "2rem";
-      transitionMsg.style.color = "#ffb6f9";
-      transitionMsg.style.background = "rgba(0,0,0,0.8)";
-      transitionMsg.style.padding = "15px 30px";
-      transitionMsg.style.borderRadius = "15px";
-      transitionMsg.style.zIndex = "999";
-      transitionMsg.style.boxShadow = "0 0 10px #ffb6f9";
-      transitionMsg.style.opacity = "0";
-      transitionMsg.style.transition = "opacity 0.3s ease";
-      document.body.appendChild(transitionMsg);
-
-      requestAnimationFrame(() => {
-        transitionMsg.style.opacity = "1";
-        setTimeout(() => {
-          transitionMsg.style.opacity = "0";
-          setTimeout(() => {
-            document.body.removeChild(transitionMsg);
-          }, 500);
-        }, 1500);
-      });
-    }
-
-    function loadSong(index) {
-      currentSong = songs[index];
-      audio = new Audio(currentSong.file);
-      setVolume(parseFloat(volumeSlider.value));
-      currentClip = 0;
-      isPlaying = false;
-      playBtn.disabled = false;
-      submitBtn.disabled = false;
-      skipBtn.disabled = false;
-      feedback.textContent = "";
-      guessInput.value = "";
+  guessInput.addEventListener("input", () => {
+    const input = guessInput.value.toLowerCase().trim();
+    suggestionsBox.innerHTML = "";
+    positionSuggestionsBox();
+    if (input === "") {
       suggestionsBox.style.display = "none";
-      fullPlayer.style.display = "none";
-      fullPlayer.pause();
-      fullPlayer.currentTime = 0;
-      updateProgress();
+      return;
+    }
+    const matched = songs
+      .map(song => ({
+        display: `${song.artist} - ${song.title}`,
+        value: `${song.artist.toLowerCase()} ${song.title.toLowerCase()}`,
+      }))
+      .filter(s => s.value.includes(input));
+    if (matched.length === 0) {
+      suggestionsBox.style.display = "none";
+      return;
+    }
+    matched.forEach(match => {
+      const div = document.createElement("div");
+      div.textContent = match.display;
+      Object.assign(div.style, {
+        padding: "6px 10px",
+        cursor: "pointer",
+        borderBottom: "1px solid #444",
+      });
+      div.addEventListener("click", () => {
+        guessInput.value = match.display.split(" - ")[1] || match.display;
+        suggestionsBox.innerHTML = "";
+        suggestionsBox.style.display = "none";
+        submitGuess();
+      });
+      div.addEventListener("mouseover", () => div.style.background = "#444");
+      div.addEventListener("mouseout", () => div.style.background = "transparent");
+      suggestionsBox.appendChild(div);
+    });
+    suggestionsBox.style.display = "block";
+  });
 
-      audio.ontimeupdate = () => {
-        progressMeter.value = audio.currentTime / (clipDurations[currentClip] || 1);
-      };
-      audio.onended = () => {
-        progressMeter.value = 0;
+  guessInput.addEventListener("blur", () => {
+    setTimeout(() => {
+      suggestionsBox.style.display = "none";
+    }, 200);
+  });
+
+  // Full audio player controls
+  const fullAudio = new Audio();
+  fullAudio.preload = "auto";
+  fullAudio.style.display = "none";
+  mainContent.appendChild(fullAudio);
+
+  const fullPlayerContainer = document.getElementById("full-player-container");
+  const fullPlayBtn = document.getElementById("full-play-pause");
+  const fullProgCont = document.getElementById("full-progress-container");
+  const fullProgBar = document.getElementById("full-progress");
+
+  fullAudio.volume = +volumeSlider.value;
+
+  function showFullPlayer() {
+    fullAudio.src = currentSong.file;
+    fullPlayerContainer.classList.add("visible");
+    fullAudio.play();
+    fullPlayBtn.textContent = "⏸️";
+  }
+
+  fullPlayBtn.addEventListener("click", () => {
+    if (fullAudio.paused) {
+      fullAudio.play();
+      fullPlayBtn.textContent = "⏸️";
+    } else {
+      fullAudio.pause();
+      fullPlayBtn.textContent = "▶️";
+    }
+  });
+
+  fullAudio.addEventListener("timeupdate", () => {
+    if (!fullAudio.duration) return;
+    fullProgBar.style.width = ((fullAudio.currentTime / fullAudio.duration) * 100) + "%";
+  });
+
+  fullProgCont.addEventListener("click", e => {
+    if (!fullAudio.duration) return;
+    const pct = (e.offsetX / fullProgCont.clientWidth);
+    fullAudio.currentTime = pct * fullAudio.duration;
+  });
+
+  fullAudio.addEventListener("ended", () => fullPlayBtn.textContent = "▶️");
+
+  // ─────────────── GAME LOGIC ───────────────
+  function showTransitionMessage() {
+    const msg = document.createElement("div");
+    msg.textContent = "🎵 New Song!";
+    Object.assign(msg.style, {
+      position: "fixed",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      padding: "15px 30px",
+      background: "rgba(0,0,0,0.8)",
+      color: "#ffb6f9",
+      borderRadius: "15px",
+      zIndex: 999,
+      opacity: 0,
+      transition: "opacity 0.3s"
+    });
+    document.body.appendChild(msg);
+    requestAnimationFrame(() => {
+      msg.style.opacity = 1;
+      setTimeout(() => {
+        msg.style.opacity = 0;
+        setTimeout(() => msg.remove(), 500);
+      }, 1500);
+    });
+  }
+
+  function updateProgress() {
+    progress.textContent = `Progress: ${currentIndex + 1} / ${filteredSongs.length}`;
+  }
+
+  function loadSong(idx) {
+    currentSong = filteredSongs[idx];
+    audio.src = currentSong.file;
+    setVolume(+volumeSlider.value);
+    currentClip = 0;
+    isPlaying = false;
+    playBtn.disabled = submitBtn.disabled = skipBtn.disabled = false;
+    feedback.textContent = "";
+    guessInput.value = "";
+    suggestionsBox.style.display = "none";
+    fullPlayerContainer.classList.remove("visible");
+    fullAudio.pause();
+    fullAudio.currentTime = 0;
+    updateProgress();
+
+    // Update preview progress bar as clip plays
+    audio.ontimeupdate = () => {
+      const duration = clipDurations[currentClip] || 1;
+      progressMeter.value = audio.currentTime / duration;
+      if (audio.currentTime >= duration) {
+        audio.pause();
         isPlaying = false;
-      };
+      }
+    };
 
-      if (!isFirstLoad) {
-  showTransitionMessage();
-	}
-      isFirstLoad = false;
+    audio.onended = () => {
+      progressMeter.value = 0;
+      isPlaying = false;
+    };
+
+    if (!isFirstLoad) showTransitionMessage();
+    isFirstLoad = false;
+
+    // Hide next button on new song load
+    nextBtn.style.display = "none";
+  }
+
+  function filterSongs() {
+    filteredSongs = songs.filter(s => activeArtists.has(s.artist));
+    if (filteredSongs.length === 0) {
+      feedback.textContent = "⚠️ No songs available with selected artists!";
+      // Disable controls
+      playBtn.disabled = submitBtn.disabled = skipBtn.disabled = true;
+      nextBtn.style.display = "none";
+      return;
     }
+    feedback.textContent = "";
+    shuffleArray(filteredSongs);
+    currentIndex = 0;
+    loadSong(currentIndex);
+    updateProgress();
+  }
 
-    function addToHistory(songName) {
-      const list = document.getElementById("history-list");
-      const item = document.createElement("li");
-      item.textContent = songName;
-      list.appendChild(item);
+  function submitGuess() {
+    const raw = guessInput.value.trim();
+    const g = normalize(raw);
+
+    const cleanTitle = normalize(currentSong.title);
+    const ok =
+      cleanTitle === g ||
+      currentSong.answers.some(answer => normalize(answer) === g);
+
+    if (ok) {
+      audio.pause();
+      audio.currentTime = 0;
+      isPlaying = false;
+      feedback.textContent = "✅ Correct! Enjoy the full song below 🎧";
+      playBtn.disabled = submitBtn.disabled = skipBtn.disabled = true;
+      chime.currentTime = 0;
+      chime.play();
+      addToHistory(`${currentSong.artist} - ${currentSong.title}`);
+      showFullPlayer();
+      showNextButton();
+    } else {
+      currentClip++;
+      if (currentClip >= clipDurations.length) {
+        audio.pause();
+        audio.currentTime = 0;
+        isPlaying = false;
+        feedback.textContent = `❌ Out of tries! The song was: "${currentSong.artist} - ${currentSong.title}". Listen below 🎧`;
+        playBtn.disabled = submitBtn.disabled = skipBtn.disabled = true;
+        showFullPlayer();
+        showNextButton();
+      } else {
+        feedback.textContent = "❌ Incorrect. Try again!";
+      }
     }
+  }
 
-    playBtn.addEventListener("click", () => {
-      if (isPlaying || currentClip >= clipDurations.length) return;
+  function showNextButton() {
+    nextBtn.style.display = "block";
+    nextBtn.classList.add("breathing");
+  }
+
+  // Event listeners
+  playBtn.addEventListener("click", () => {
+    if (!isPlaying && currentClip < clipDurations.length) {
       isPlaying = true;
       audio.currentTime = 0;
       audio.play();
@@ -1613,213 +1807,40 @@
         audio.pause();
         isPlaying = false;
       }, clipDurations[currentClip] * 1000);
-    });
+    }
+  });
 
-    submitBtn.addEventListener("click", submitGuess);
-    guessInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") submitGuess();
-    });
+  submitBtn.addEventListener("click", submitGuess);
 
-    function submitGuess() {
-  const guess = guessInput.value.trim().toLowerCase();
-  const match = currentSong.answers.some(answer => guess.includes(answer.toLowerCase()));
+  guessInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      submitGuess();
+    }
+  });
 
-  if (match) {
-    audio.pause();
-    audio.currentTime = 0;
-    isPlaying = false;
-    feedback.textContent = "✅ Correct! Enjoy the full song below 🎧";
-    playBtn.disabled = true;
-    submitBtn.disabled = true;
-    skipBtn.disabled = true;
-
-    // ✅ Play the chime only when answer is correct
-    chime.currentTime = 0;
-    chime.play();
-
-    addToHistory(`${currentSong.artist} - ${currentSong.title}`);
-    showFullPlayer();
-
-    showNextButton();
-  } else {
-    currentClip++;
-    if (currentClip >= clipDurations.length) {
-      audio.pause();
-      audio.currentTime = 0;
-      isPlaying = false;
-      feedback.textContent = `❌ Out of tries! The song was: "${currentSong.artist} - ${currentSong.title}". Listen below 🎧`;
-      playBtn.disabled = true;
-      submitBtn.disabled = true;
-      skipBtn.disabled = true;
-      showFullPlayer();
-      showNextButton();
+  skipBtn.addEventListener("click", () => {
+    if (currentClip < clipDurations.length - 1) {
+      currentClip++;
+      feedback.textContent = `🔊 Skipped to ${clipDurations[currentClip]}s`;
     } else {
-      feedback.textContent = "❌ Incorrect. Try again!";
+      feedback.textContent = "⏭️ Max length reached";
     }
-  }
-}
+  });
 
-
-    skipBtn.addEventListener("click", () => {
-      if (currentClip < clipDurations.length - 1) {
-        currentClip++;
-        feedback.textContent = `🔊 Skipped! You can now hear up to ${clipDurations[currentClip]} seconds.`;
-      } else {
-        feedback.textContent = "⏭️ You've already reached the max length!";
-      }
-    });
-
-    // Next button logic
-    const nextBtn = document.createElement("button");
-    nextBtn.id = "next-btn";
-    nextBtn.textContent = "Next ▶️";
+  // Next button (created once)
+  const nextBtn = document.createElement("button");
+  nextBtn.id = "next-btn";
+  nextBtn.textContent = "Next ▶️";
+  nextBtn.style.display = "none";
+  nextBtn.style.margin = "10px";
+  nextBtn.addEventListener("click", () => {
     nextBtn.style.display = "none";
-    nextBtn.style.marginTop = "10px";
-    document.body.insertBefore(nextBtn, historyLog);
-
-    function showNextButton() {
-      nextBtn.style.display = "inline-block";
-    }
-
-    nextBtn.addEventListener("click", () => {
-      nextBtn.style.display = "none";
-      currentIndex = (currentIndex + 1) % songs.length;
-      loadSong(currentIndex);
-    });
-
-    // Autocomplete suggestions
-    const suggestionsBox = document.createElement("div");
-    suggestionsBox.id = "suggestions";
-    suggestionsBox.style.position = "absolute";
-    suggestionsBox.style.background = "#2c2c4a";
-    suggestionsBox.style.color = "#fff";
-    suggestionsBox.style.border = "1px solid #555";
-    suggestionsBox.style.borderRadius = "10px";
-    suggestionsBox.style.padding = "5px";
-    suggestionsBox.style.marginTop = "5px";
-    suggestionsBox.style.zIndex = "999";
-    suggestionsBox.style.display = "none";
-    suggestionsBox.style.width = guessInput.offsetWidth + "px";
-    suggestionsBox.style.maxHeight = "500px";
-    suggestionsBox.style.overflowY = "auto";
-    document.body.appendChild(suggestionsBox);
-
-    function positionSuggestionsBox() {
-      const rect = guessInput.getBoundingClientRect();
-      suggestionsBox.style.left = rect.left + "px";
-      suggestionsBox.style.top = rect.bottom + window.scrollY + "px";
-      suggestionsBox.style.width = rect.width + "px";
-    }
-
-    window.addEventListener("resize", positionSuggestionsBox);
-    window.addEventListener("scroll", positionSuggestionsBox);
-
-    guessInput.addEventListener("input", () => {
-      const input = guessInput.value.toLowerCase().trim();
-      suggestionsBox.innerHTML = "";
-      positionSuggestionsBox();
-      if (input === "") {
-        suggestionsBox.style.display = "none";
-        return;
-      }
-
-      const matched = songs
-        .map(song => ({
-          display: `${song.artist} - ${song.title}`,
-          value: `${song.artist.toLowerCase()} ${song.title.toLowerCase()}`,
-        }))
-        .filter(s => s.value.includes(input));
-
-      if (matched.length === 0) {
-        suggestionsBox.style.display = "none";
-        return;
-      }
-
-      matched.forEach(match => {
-        const div = document.createElement("div");
-        div.textContent = match.display;
-        div.style.padding = "6px 10px";
-        div.style.cursor = "pointer";
-        div.style.borderBottom = "1px solid #444";
-        div.addEventListener("click", () => {
-          guessInput.value = match.display;
-          suggestionsBox.innerHTML = "";
-          suggestionsBox.style.display = "none";
-          submitGuess();
-        });
-        div.addEventListener("mouseover", () => {
-          div.style.background = "#444";
-        });
-        div.addEventListener("mouseout", () => {
-          div.style.background = "transparent";
-        });
-        suggestionsBox.appendChild(div);
-      });
-
-      suggestionsBox.style.display = "block";
-    });
-
-    guessInput.addEventListener("blur", () => {
-      setTimeout(() => {
-        suggestionsBox.style.display = "none";
-      }, 200);
-    });
-// --- FULL PLAYER CUSTOM UI SETUP ---
-const fullPlayerContainer = document.getElementById("full-player-container");
-const fullPlayPauseBtn = document.getElementById("full-play-pause");
-const fullProgressContainer = document.getElementById("full-progress-container");
-const fullProgressBar = document.getElementById("full-progress");
-
-// Replace your existing fullPlayer element with a single audio element (you already have one):
-// We'll reuse your existing fullPlayer audio element but hide its default controls.
-fullPlayer.controls = false;
-fullPlayer.style.display = "none"; // Initially hidden
-
-// Show the full player container and set audio source + play
-function showFullPlayer() {
-  fullPlayer.src = currentSong.file;
-  fullPlayer.currentTime = 0;
-  fullPlayerContainer.style.display = "flex";
-  fullPlayer.style.display = "none"; // Hide native controls
-  fullPlayer.load();
-  fullPlayer.play();
-  fullPlayPauseBtn.textContent = "⏸️"; // Show pause icon initially
-}
-
-
-// Play/pause toggle button behavior
-fullPlayPauseBtn.addEventListener("click", () => {
-  if (fullPlayer.paused) {
-    fullPlayer.play();
-    fullPlayPauseBtn.textContent = "⏸️";
-  } else {
-    fullPlayer.pause();
-    fullPlayPauseBtn.textContent = "▶️";
-  }
-});
-
-// Update progress bar as the full song plays
-fullPlayer.addEventListener("timeupdate", () => {
-  if (fullPlayer.duration) {
-    const percent = (fullPlayer.currentTime / fullPlayer.duration) * 100;
-    fullProgressBar.style.width = percent + "%";
-  }
-});
-
-// Clicking the progress container seeks the full audio
-fullProgressContainer.addEventListener("click", (e) => {
-  const rect = fullProgressContainer.getBoundingClientRect();
-  const clickX = e.clientX - rect.left;
-  const pct = clickX / rect.width;
-  if (fullPlayer.duration) {
-    fullPlayer.currentTime = pct * fullPlayer.duration;
-  }
-});
-
-// When the full song ends, update the play button icon
-fullPlayer.addEventListener("ended", () => {
-  fullPlayPauseBtn.textContent = "▶️";
-});
-
+    currentIndex = (currentIndex + 1) % filteredSongs.length;
     loadSong(currentIndex);
   });
+  mainContent.insertBefore(nextBtn, fullPlayerContainer);
+
+  // Initial setup
+  filterSongs();
+
+});

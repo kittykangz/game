@@ -1,139 +1,311 @@
-/* Ensure the slider fills the bar completely, thumb touches edges */
-input[type="range"].volume-slider {
-  width: 200px;         /* adjust as needed, or use 100% */
+/* Reset */
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background: transparent;
 }
 
-/* Chrome, Safari, Edge */
-input[type="range"].volume-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 14px;
-  height: 14px;
-  background: #ccc;
-  border-radius: 50%;
-  cursor: pointer;
-  margin-top: -5px;  /* Center thumb on track */
-  box-shadow: 0 0 2px #00000055;
-}
-input[type="range"].volume-slider::-webkit-slider-runnable-track {
-  height: 4px;
-  background: #444;
-  border-radius: 2px;
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #1e1e2f;
+  color: #fceaff;
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-/* Firefox */
-input[type="range"].volume-slider::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  background: #ccc;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-}
-input[type="range"].volume-slider::-moz-range-track {
-  height: 4px;
-  background: #444;
-  border-radius: 2px;
-}
-input[type="range"].volume-slider {
-  border: none;
-  background: transparent;
-}
-
-/* IE */
-input[type="range"].volume-slider::-ms-fill-lower,
-input[type="range"].volume-slider::-ms-fill-upper {
-  background: #444;
-  border-radius: 2px;
-}
-input[type="range"].volume-slider::-ms-thumb {
-  width: 14px;
-  height: 14px;
-  background: #ccc;
-  border-radius: 50%;
-  cursor: pointer;
-}
-input[type="range"].volume-slider {
+/* Sidebar */
+#artist-filter {
   width: 200px;
-  background: transparent;
+  background-color: #2c2c4a;
+  padding: 20px;
+  border-right: 2px solid #444;
+  overflow-y: auto;
+  min-height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+#artist-filter h2 {
+  color: #bae1ff;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+#artist-filter label {
+  display: block;
+  margin: 5px 0;
+  font-size: 0.95rem;
+}
+
+#main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 30px;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: center;
+}
+
+h1 {
+  margin-bottom: 10px;
+  font-size: 2rem;
+  color: #bae1ff;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#guess {
+  display: flex;
+  padding: 10px;
   border: none;
+  border-radius: 8px;
+  width: 220px;
+  font-size: 1rem;
+  background: rgb(255, 255, 255);
+  color: #000000;
+  
 }
 
-input[type="range"].volume-slider {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+
+/* Suggestions Dropdown */
+#suggestions {
+  background: #2c2c4a;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 10px;
+  padding: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 5px;
+  width: 300px;
+  display: none;
+  position: absolute;
+  z-index: 1000;
 }
 
 
-input[type="range"].volume-slider {
-  width: 150px;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  background: transparent;
+#full-player-container {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  width: 100%;
+  max-width: 550px; /* Slightly narrower */
+  margin: 20px auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: center;
+
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(44, 44, 74, 0.85);
 }
 
-/* Remove thumb padding at ends in Chrome/Safari/Edge */
-input[type="range"].volume-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 18px;
-  height: 18px;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 0 2px #00000044;
-  margin-top: -7px;
+#full-player-container.visible {
+  visibility: visible;
+  opacity: 1;
+}
+
+
+
+#full-play-pause {
+  background: #5a5a8a;
+  /* Prevents shrinking of the play/pause button to maintain its size */
+  flex-shrink: 0;
+  color: #fceaff;
+  font-size: 1.8rem;
+  padding: 8px 16px;
+  border-radius: 10px;
   cursor: pointer;
-  border: 2px solid #bae1ff;
+  transition: background-color 0.25s ease;
+  flex-shrink: 0;
 }
-input[type="range"].volume-slider::-webkit-slider-runnable-track {
-  height: 4px;
-  background: #bae1ff;
-  border-radius: 2px;
-  margin: 0;
+
+#full-play-pause:hover {
+  background: #7a7abb;
 }
-/* Remove thumb padding in Firefox */
-input[type="range"].volume-slider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  background: #fff;
-  border: 2px solid #bae1ff;
-  border-radius: 50%;
+
+#full-progress-container {
+  flex-grow: 0;
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 400px; /* Forces full width inside the player */
+  height: 10px;
+  background: #444466;
+  border-radius: 5px;
   cursor: pointer;
+  box-shadow: inset 0 0 6px #0009;
 }
-input[type="range"].volume-slider::-moz-range-track {
-  height: 4px;
-  background: #bae1ff;
-  border-radius: 2px;
+
+
+#full-progress {
+  height: 100%;
+  background: #b6a1ff;
+  width: 0%;
+  min-width: 5px; /* Fallback width */
+  border-radius: 5px;
+  transition: width 0.15s ease;
 }
-/* IE/Edge fixes */
-input[type="range"].volume-slider::-ms-fill-lower,
-input[type="range"].volume-slider::-ms-fill-upper {
-  background: #bae1ff;
-  border-radius: 2px;
+#history {
+  color: #fceaff;
+  font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+  margin-top: 50px;
+  text-align: left;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15); /* subtle box border */
 }
-input[type="range"].volume-slider::-ms-thumb {
-  width: 18px;
-  height: 18px;
-  background: #fff;
-  border-radius: 50%;
+
+#history h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #fceaff;
+  font-weight: 600;
+}
+
+#history-list {
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.guess-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.guess-item:last-child {
+  border-bottom: none;
+}
+
+.guess-text {
+  font-weight: 500;
+  color: #baffc9;
+}
+
+.guess-result {
+  font-style: italic;
+  color: #d6a8ff;
+  min-width: 60px;
+  text-align: right;
+}
+
+
+
+
+
+
+button {
+  background: linear-gradient(145deg, #ffb6f9, #baffc9, #bae1ff);
+  color: #222;
   cursor: pointer;
-  border: 2px solid #bae1ff;
-}
-input[type="range"].volume-slider {
+  transition: transform 0.2s;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 10px;
   border: none;
-  background: transparent;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  margin: 10px;
 }
 
-/* Remove default focus outline */
-input[type="range"].volume-slider:focus {
-  outline: none;
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 8px 2px rgba(186, 241, 255, 0.1);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* Place this AFTER all generic button styles */
+#next-btn {
+  margin-top: 20px;
+  background-color: #bae1ff;
+  color: #1e1e2f;
+  font-weight: bold;
+  border-radius: 10px;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+
+  /* Permanent glowing outline */
+  box-shadow: 0 0 8px 3px rgba(186, 241, 255, 0.6);
+  outline: 0px solid rgba(186, 241, 255, 0.8);
+  outline-offset: 3px;
+
+  /* Keep smooth transition for any hover changes (optional) */
+  transition: box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+
+#next-btn:hover {
+  background-color: #a2d8ff;
+  box-shadow: 0 0 14px 5px rgba(186, 241, 255, 0.9);
+}
+
+@keyframes breathing-glow {
+  0%   { box-shadow: 0 0 5px #ff66cc; }
+  50%  { box-shadow: 0 0 20px #ff66cc, 0 0 30px #ff66cc; }
+  100% { box-shadow: 0 0 5px #ff66cc; }
+}
+
+#next-btn.breathing {
+  animation: breathing-glow 2s infinite;
+  border: 2px solid #ff66cc;
+  color: #000;
+  background-color: #2c2c4a;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  padding: 8px 16px;
+  transition: transform 0.2s;
+}
+
+#next-btn.breathing:hover {
+  transform: scale(1.05);
+}
+
+#title span {
+  font-weight: bold;
+  font-size: 2rem;
+  display: inline-block;
+  letter-spacing: -4px; /* tighten spacing */
+  margin-right: -4px;   /* reduce extra space */
+}
+
+#title .t  { color: #ff4d6d; }
+#title .e  { color: #f9c74f; }
+#title .a  { color: #90be6d; }
+#title .r  { color: #43aa8b; }
+#title .d  { color: #577590; }
+#title .l  { color: #9d4edd; }
+#title .e2 { color: #ff6ec7; }
+
+#history:empty {
+  display: none;
+}
+
+#history {
+  color: #baffc9; /* change to your preferred color */
+}
+
+#history h2 {
+  color: #bae1ff;  /* or your preferred color */
 }
